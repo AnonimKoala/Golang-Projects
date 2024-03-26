@@ -6,7 +6,7 @@
 
 @font-face {
     font-family: NotoSans-regular;
-    src: url(Noto_Sans/NotoSans-Regular.ttf);
+    src: url("../fonts/NotoSans-Regular.ttf");
 }
 /*TODO Download the font*/
 :root {
