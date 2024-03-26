@@ -13,8 +13,8 @@ type person struct {
 
 type activity struct {
 	Person person
-	time   string
-	date   string
+	Time   string
+	Date   string
 }
 
 type dbPerson struct {
