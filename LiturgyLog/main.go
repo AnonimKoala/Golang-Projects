@@ -26,5 +26,6 @@ func main() {
 	r := mux.NewRouter()
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets", http.FileServer(http.Dir("./assets"))))
 	r.HandleFunc("/", index)
+	r.HandleFunc("/attendance", attendance)
 	http.ListenAndServe(":8080", r)
 }

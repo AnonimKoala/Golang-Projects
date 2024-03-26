@@ -5,6 +5,22 @@ import (
 	"net/http"
 )
 
+func attendance(w http.ResponseWriter, r *http.Request) {
+	type data struct {
+		Week  []activity
+		Month []activity
+	}
+
+	var d data
+	d.Month = queryActivities("thisMonth")
+	d.Week = queryActivities("thisWeek")
+
+	err := tpl.ExecuteTemplate(w, "frekwencja.gohtml", d)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func index(w http.ResponseWriter, r *http.Request) {
 	type data struct {
 		ACount      int
