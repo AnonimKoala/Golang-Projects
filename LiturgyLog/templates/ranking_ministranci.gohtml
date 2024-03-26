@@ -1,0 +1,144 @@
+<?php
+
+session_start();
+
+if (!isset($_SESSION['logged'])) {
+    header('Location: index.php');
+    exit();
+}
+require_once "connect.php";
+$_SESSION['conn'] = @new mysqli($host, $db_user, $db_password, $db_name);
+
+?>
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking - Służba liturgiczna</title>
+    <link rel="stylesheet" href="general.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="ranking.css">
+</head>
+
+<body>
+    <main>
+        <div class="container">
+            <button class="showbutton" onclick="show_nav()">
+                <ion-icon name="menu-outline" class="hide620"></ion-icon>
+            </button>
+            <nav id="main_nav">
+                <ul>
+                    <li><a href="home.php">
+                            <ion-icon name="home-outline"></ion-icon><span class="menu">Dom</span>
+                        </a></li>
+
+                    <li>
+                        <a href="frekwencja.php#week">
+                            <ion-icon name="clipboard-outline"></ion-icon><span class="menu">Frekwencja</span>
+                        </a>
+                    </li>
+                    <li class="checked"><a href="ranking.php">
+                            <ion-icon name="trophy-outline"></ion-icon><span class="menu">Ranking</span>
+                        </a></li>
+                    <li>
+                        <a href="zbiorki/zbiorki_lektor.php">
+                            <ion-icon name="reader-outline"></ion-icon><span class="menu">Zbiórki</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="http://sluzbaliturgiczna-zgloszenia.epizy.com/help.php">
+                            <ion-icon name="information-circle-outline"></ion-icon><span class="menu">Pomoc</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="logout.php">
+                            <ion-icon name="log-out-outline"></ion-icon><span class="menu">Wyloguj się</span>
+                        </a>
+                    </li>
+                    <li class="hide1030">
+                        <button onclick="hide_nav()">
+                            <a>
+                                <ion-icon name="chevron-forward-circle-outline" class="zwin"></ion-icon><span class="menu">Zwiń</span>
+                            </a>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+
+            <article class="main_top_article">
+                <header>
+                    <div class="empty"></div>
+                    <h1>Ranking Ministrantów</h1>
+                    <ul>
+                        <li><a href="ranking.php">Lektorzy</a></li>
+                        <li class="checked"><a href="ranking_ministranci.php">Ministranci</a></li>
+                    </ul>
+                </header>
+                <section class="top3">
+                    <ul>
+                        <?php
+                        $top3_m[1] = $_SESSION['conn']->query("SELECT Imie, Nazwisko,Punkty,zbiorki,suma FROM osoby WHERE stopien LIKE 'M%' ORDER By suma DESC, osoby.Nazwisko ASC LIMIT 1");
+                        $top3_m[0] = $_SESSION['conn']->query("SELECT Imie, Nazwisko,Punkty,zbiorki,suma FROM osoby WHERE stopien LIKE 'M%' ORDER By suma DESC, osoby.Nazwisko ASC LIMIT 1 OFFSET 1");
+                        $top3_m[2] = $_SESSION['conn']->query("SELECT Imie, Nazwisko,Punkty,zbiorki,suma FROM osoby WHERE stopien LIKE 'M%' ORDER By suma DESC, osoby.Nazwisko ASC LIMIT 1 OFFSET 2");
+
+                        for ($i = 0; $i < 3; $i++) {
+                            if ($top3_m[$i]->num_rows > 0) {
+                                $row = $top3_m[$i]->fetch_assoc();
+                                echo '<li><div><div class="img"><ion-icon name="trophy"></ion-icon></div>';
+                                echo '<h2>' . $row['Imie'] . ' ' . $row['Nazwisko'] . '</h2><span>Ministrant</span><p>Suma: ' . $row['suma'] . '</p>';
+                                echo '<p><span><ion-icon name="calendar-number-outline"></ion-icon><span> ' . $row['Punkty'] . '</span></span><span><ion-icon name="reader-outline"></ion-icon><span> ' . $row['zbiorki'] . '</span></span></p></div></li>';
+                            } else {
+                                $row = $top3_m[$i]->fetch_assoc();
+                                echo '<li><div><div class="img"><ion-icon name="trophy"></ion-icon></div>';
+                                echo '<h2></h2><span>Ministrant</span><p>Suma: </p>';
+                                echo '<p><span><ion-icon name="calendar-number-outline"></ion-icon><span></span></span><span><ion-icon name="reader-outline"></ion-icon><span></span></span></p></div></li>';
+                            }
+                        }
+                        ?>
+                    </ul>
+                </section>
+                <section class="ranking">
+                    <ul>
+                        <li>
+                            <span>Lp.</span>
+                            <span>Imię i nazwisko</span>
+                            <span>Przynależność</span>
+                            <span>Punkty</span>
+                            <span>Zbiórki</span>
+                            <span>Suma</span>
+                        </li>
+                        <?php
+                        $top_m = $_SESSION['conn']->query("SELECT Imie, Nazwisko,Punkty,zbiorki,suma FROM osoby WHERE stopien LIKE 'M%' ORDER BY suma DESC, osoby.Nazwisko ASC LIMIT 10000000 OFFSET 3");
+                        if ($top_m->num_rows > 0) {
+                            $x = 4;
+                            while ($row = $top_m->fetch_assoc()) {
+                                echo '<li><span>' . $x++ . '.</span><span>' . $row['Imie'] . ' ' . $row['Nazwisko'] . '</span><span>Ministrant</span><span>' . $row['Punkty'] . '</span><span>' . $row['zbiorki'] . '</span><span>' . $row['suma'] . '</span></li>';
+                            }
+                        }
+
+
+                        ?>
+
+
+                    </ul>
+
+
+                </section>
+            </article>
+
+
+
+
+
+
+        </div>
+    </main>
+    <script src="button_script.js"></script>
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+
+</html>
