@@ -39,6 +39,7 @@ body {
     /* background-color: rgb(242, 247, 250); */
     /* background-color: #eaecff; */
     background-color: rgb(226, 235, 251);
+    min-height: 100vh;
 }
 
 ul {
