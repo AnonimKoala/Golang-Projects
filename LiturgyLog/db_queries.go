@@ -21,14 +21,26 @@ func scanRankRows(target *[]person, rows *sql.Rows) {
 
 func scanActivityRows(target *[]activity, rows *sql.Rows) {
 	for rows.Next() {
-		var a activity
-
+		var dA dbActivity
 		err := rows.Scan(
-			&a.Person.FirstName,
-			&a.Person.LastName,
-			&a.time,
-			&a.date,
+			&dA.person.firstName,
+			&dA.person.lastName,
+			&dA.time,
+			&dA.date,
 		)
+
+		var a activity
+		a.Person.FirstName = dA.person.firstName.String
+		a.Person.LastName = dA.person.lastName.String
+		a.Time = dA.time.String
+
+		ts := dA.date.String
+		t, err := time.Parse(time.RFC3339, ts)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		a.Date = t.Format("02-01-2006")
 
 		if err != nil {
 			log.Fatal(err)
