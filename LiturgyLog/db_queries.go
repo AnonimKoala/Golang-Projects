@@ -101,3 +101,40 @@ func queryActivities(mode string) []activity {
 
 	return a
 }
+
+func queryUsers() map[string]user {
+	q := "SELECT users.username, users.password, users.role, users.fn, users.ln FROM `users`"
+	rows, err := db.Query(q)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+
+	var dbUsers = map[string]user{}
+	var un, r, fn, ln sql.NullString
+	var pwd []byte
+
+	for rows.Next() {
+		err := rows.Scan(&un, &pwd, &r, &fn, &ln)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		dbUsers[un.String] = user{un.String, []byte(pwd), r.String, fn.String, ln.String}
+	}
+
+	return dbUsers
+}
+
+func queryNewUser(u user) {
+	q := fmt.Sprintf("INSERT INTO users (users.username, users.password, users.role, users.fn, users.ln) VALUES ('%s','%s','%s','%s','%s')", u.UserName, u.Password, u.Role, u.First, u.Last)
+	stmt, err := db.Prepare(q)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec()
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
