@@ -9,6 +9,7 @@ type person struct {
 	MPoints   int
 	GPoints   int
 	Sum       int
+	Rank      int
 }
 
 type activity struct {
