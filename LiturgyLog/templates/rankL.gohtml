@@ -70,7 +70,7 @@
                 <h1>Ranking Lektorów</h1>
                 <ul>
                     <li class="checked"><a href="ranking.php">Lektorzy</a></li>
-                    <li><a href="ranking_ministranci.gohtml">Ministranci</a></li>
+                    <li><a href="rankA.gohtml">Ministranci</a></li>
                 </ul>
             </header>
             <section class="top3">
@@ -98,26 +98,6 @@
 
                         </li>
                     {{end}}
-
-                    {{/*                    $row = $top3_l[$i]->fetch_assoc();*/}}
-                    {{/*                    echo '*/}}
-                    {{/*                    <li>*/}}
-                    {{/*                        <div>*/}}
-                    {{/*                            <div class="img">*/}}
-                    {{/*                                <ion-icon name="trophy"></ion-icon>*/}}
-                    {{/*                            </div>*/}}
-                    {{/*                            ';*/}}
-                    {{/*                            echo '<h2>' . $row['Imie'] . ' ' . $row['Nazwisko'] . '</h2><span>Lektor</span>*/}}
-                    {{/*                            <p>Suma: ' . $row['suma'] . '</p>';*/}}
-                    {{/*                            echo '*/}}
-                    {{/*                            <p><span><ion-icon*/}}
-                    {{/*                                            name="calendar-number-outline"></ion-icon><span> ' . $row['Punkty'] . '</span></span><span><ion-icon*/}}
-                    {{/*                                            name="reader-outline"></ion-icon><span> ' . $row['zbiorki'] . '</span></span>*/}}
-                    {{/*                            </p>*/}}
-                    {{/*                        </div>*/}}
-                    {{/*                    </li>*/}}
-                    ';
-
                 </ul>
             </section>
             <section class="ranking">
@@ -137,11 +117,7 @@
                             <span>{{.index}}</span><span>{{.Person.FirstName}} {{.Person.LastName}}</span><span>Lektor</span><span>' . $row['Punkty'] . '</span><span>' . $row['zbiorki'] . '</span><span>' . $row['suma'] . '</span>
                         </li>
                     {{end}}
-
-
                 </ul>
-
-
             </section>
         </article>
 
