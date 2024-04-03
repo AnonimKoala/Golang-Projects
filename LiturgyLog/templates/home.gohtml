@@ -40,7 +40,7 @@
                         <span class="menu">Frekwencja</span>
                     </a>
                 </li>
-                <li><a href="ranking.gohtml">
+                <li><a href="/rankL">
                         <ion-icon name="trophy-outline"></ion-icon>
                         <span class="menu">Ranking</span>
                     </a></li>
@@ -57,7 +57,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="logout">
+                    <a href="/logout">
                         <ion-icon name="log-out-outline"></ion-icon>
                         <span class="menu">Wyloguj się</span>
                     </a>
@@ -83,7 +83,7 @@
                 <div>
                     <section>
                         <div>
-                            <a href="ranking_ministranci.gohtml" class="home_button pointer_less">
+                            <a href="/rankA" class="home_button pointer_less">
                                 <ion-icon name="people-outline"></ion-icon>
                                 <p>Ministranci:</p>
                                 <span>
@@ -105,7 +105,7 @@
                     </section>
                     <section>
                         <div>
-                            <a href="ranking.gohtml" class="home_button pointer_less">
+                            <a href="/rankL" class="home_button pointer_less">
                                 <ion-icon name="people-outline"></ion-icon>
                                 <p>Lektorzy:</p>
                                 <span>
@@ -154,13 +154,13 @@
                     <ion-icon name="trophy-outline"></ion-icon>
                     TOP 5 Lektorów
                 </h2>
-                <a href="ranking.gohtml" class="pointer_less">
+                <a href="/rankL" class="pointer_less">
                     <div class="color_frame">
                         <table class="top_table">
                             {{range $i, $v := .Top5L}}
                                 <tr>
                                     <th>
-                                        {{ if lt $i 4 }}
+                                        {{ if lt $i 3 }}
                                             <ion-icon name="trophy"></ion-icon>
                                         {{ else }}
                                             {{$i}}
@@ -183,16 +183,16 @@
                     <ion-icon name="trophy-outline"></ion-icon>
                     TOP 5 Ministrantów
                 </h2>
-                <a href="ranking_ministranci.gohtml" class="pointer_less">
+                <a href="/rankA" class="pointer_less">
                     <div class="color_frame">
                         <table class="top_table">
                             {{range $i, $v := .Top5A}}
                                 <tr>
                                     <th>
-                                        {{ if lt $i 4 }}
+                                        {{ if lt $i 3 }}
                                             <ion-icon name="trophy"></ion-icon>
                                         {{ else }}
-                                            {{$i}}
+                                            {{$v.Rank}}
                                         {{end}}
                                     </th>
                                     <td>{{$v.FirstName}}</td>
