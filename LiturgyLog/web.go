@@ -24,6 +24,84 @@ func attendance(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func rankL(w http.ResponseWriter, req *http.Request) {
+	if !alreadyLoggedIn(w, req) {
+		http.Redirect(w, req, "/", http.StatusSeeOther)
+		return
+	}
+	type PersonWithIndex struct {
+		index  int
+		Person person
+	}
+	type data struct {
+		top3  []PersonWithIndex
+		other []PersonWithIndex
+	}
+
+	l, _ := queryRank()
+	var d data
+	if len(l) >= 3 {
+		d.top3 = make([]PersonWithIndex, 3)
+		for i := 0; i < 3; i++ {
+			d.top3[i] = PersonWithIndex{i + 1, l[i]}
+		}
+		d.other = make([]PersonWithIndex, len(l)-3)
+		for i := 3; i < len(l); i++ {
+			d.other[i-3] = PersonWithIndex{i + 1, l[i]}
+		}
+	} else {
+		d.top3 = make([]PersonWithIndex, len(l))
+		for i := 0; i < len(l); i++ {
+			d.top3[i] = PersonWithIndex{i + 1, l[i]}
+		}
+		d.other = make([]PersonWithIndex, 0)
+	}
+
+	err := tpl.ExecuteTemplate(w, "rankL.gohtml", d)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func rankA(w http.ResponseWriter, req *http.Request) {
+	if !alreadyLoggedIn(w, req) {
+		http.Redirect(w, req, "/", http.StatusSeeOther)
+		return
+	}
+	type PersonWithIndex struct {
+		index  int
+		person person
+	}
+	type data struct {
+		top3  []PersonWithIndex
+		other []PersonWithIndex
+	}
+
+	_, a := queryRank()
+	var d data
+	if len(a) >= 3 {
+		d.top3 = make([]PersonWithIndex, 3)
+		for i := 0; i < 3; i++ {
+			d.top3[i] = PersonWithIndex{i + 1, a[i]}
+		}
+		d.other = make([]PersonWithIndex, len(a)-3)
+		for i := 3; i < len(a); i++ {
+			d.other[i-3] = PersonWithIndex{i + 1, a[i]}
+		}
+	} else {
+		d.top3 = make([]PersonWithIndex, len(a))
+		for i := 0; i < len(a); i++ {
+			d.top3[i] = PersonWithIndex{i + 1, a[i]}
+		}
+		d.other = make([]PersonWithIndex, 0)
+	}
+
+	err := tpl.ExecuteTemplate(w, "rankL.gohtml", d)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func home(w http.ResponseWriter, req *http.Request) {
 	if !alreadyLoggedIn(w, req) {
 		http.Redirect(w, req, "/", http.StatusSeeOther)

@@ -49,6 +49,8 @@ func main() {
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets", http.FileServer(http.Dir("./assets"))))
 	r.HandleFunc("/home", home)
 	r.HandleFunc("/attendance", attendance)
+	r.HandleFunc("/rankL", rankL)
+	r.HandleFunc("/rankA", rankA)
 
 	r.HandleFunc("/", index)
 	r.HandleFunc("/bar", bar)
