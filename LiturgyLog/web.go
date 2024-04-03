@@ -208,7 +208,6 @@ func signup(w http.ResponseWriter, req *http.Request) {
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 		return
 	}
-	showSessions() // for demonstration purposes
 	tpl.ExecuteTemplate(w, "signup.gohtml", u)
 }
 
@@ -246,7 +245,6 @@ func login(w http.ResponseWriter, req *http.Request) {
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 		return
 	}
-	showSessions() // for demonstration purposes
 	tpl.ExecuteTemplate(w, "login.gohtml", u)
 }
 
