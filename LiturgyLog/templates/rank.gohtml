@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking - Służba liturgiczna</title>
+    <link rel="stylesheet" href="/assets/CSS/general.css">
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
+    <link rel="stylesheet" href="/assets/CSS/ranking.css">
+</head>
+
+<body>
+<main>
+
+    <div class="container">
+        <button class="showbutton" onclick="show_nav()">
+            <ion-icon name="menu-outline" class="hide620"></ion-icon>
+        </button>
+        <nav id="main_nav">
+            <ul>
+                <li><a href="/">
+                        <ion-icon name="home-outline"></ion-icon>
+                        <span class="menu">Dom</span>
+                    </a></li>
+
+                <li>
+                    <a href="attendance#week">
+                        <ion-icon name="clipboard-outline"></ion-icon>
+                        <span class="menu">Frekwencja</span>
+                    </a>
+                </li>
+                <li class="checked"><a href="rank">
+                        <ion-icon name="trophy-outline"></ion-icon>
+                        <span class="menu">Ranking</span>
+                    </a></li>
+                <li>
+                    <a href="zbiorki/zbiorki_lektor.php">
+                        <ion-icon name="reader-outline"></ion-icon>
+                        <span class="menu">Zbiórki</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="http://sluzbaliturgiczna-zgloszenia.epizy.com/help.php">
+                        <ion-icon name="information-circle-outline"></ion-icon>
+                        <span class="menu">Pomoc</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="logout.php">
+                        <ion-icon name="log-out-outline"></ion-icon>
+                        <span class="menu">Wyloguj się</span>
+                    </a>
+                </li>
+                <li class="hide1030">
+                    <button onclick="hide_nav()">
+                        <a>
+                            <ion-icon name="chevron-forward-circle-outline" class="zwin"></ion-icon>
+                            <span class="menu">Zwiń</span>
+                        </a>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
+        <article class="main_top_article">
+            <header>
+                <div class="empty"></div>
+                <h1>Ranking Lektorów</h1>
+                <ul>
+
+                    <li {{if .IsL}} class="checked"{{end}}><a href="/rankL">Lektorzy</a></li>
+                    <li {{if not .IsL}} class="checked"{{end}}><a href="/rankA">Ministranci</a></li>
+                </ul>
+            </header>
+            <section class="top3">
+                <ul>
+                    {{range .Top3}}
+                        <li>
+                            <div>
+                                <div class="img">
+                                    <ion-icon name="trophy"></ion-icon>
+                                </div>
+
+                                <h2>{{.Person.FirstName}} {{.Person.LastName}}</h2>
+                                <span>Lektor</span>
+                                <p>Suma {{.Person.Sum}}</p>';
+                                <p>
+                                    <span>
+                                        <ion-icon name="calendar-number-outline"></ion-icon>
+                                        <span>{{.Person.GPoints}}</span>
+                                    </span>
+                                    <span>
+                                        <ion-icon
+                                                name="reader-outline"></ion-icon><span>{{.Person.MPoints}}</span></span>
+                                </p>
+                            </div>
+
+                        </li>
+                    {{end}}
+                </ul>
+            </section>
+            <section class="ranking">
+                <ul>
+                    <li>
+                        <span>Lp.</span>
+                        <span>Imię i nazwisko</span>
+                        <span>Przynależność</span>
+                        <span>Punkty</span>
+                        <span>Zbiórki</span>
+                        <span>Suma</span>
+                    </li>
+
+
+                    {{range .Other}}
+                        <li>
+                            <span>{{.Person.Rank}}</span>
+                            <span>{{.Person.FirstName}} {{.Person.LastName}}</span>
+                            <span>Lektor</span>
+                            <span>{{.Person.GPoints}}</span>
+                            <span>{{.Person.MPoints}}</span>
+                            <span>{{.Person.Sum}}</span>
+                        </li>
+                    {{end}}
+                </ul>
+            </section>
+        </article>
+
+
+    </div>
+</main>
+
+<script src="/assets/JS/button_script.js" type="module"></script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+
+</html>
