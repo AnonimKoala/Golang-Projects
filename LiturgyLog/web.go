@@ -1,8 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
-	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"time"
@@ -30,34 +31,36 @@ func rankL(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	type PersonWithIndex struct {
-		index  int
+		Index  int
 		Person person
 	}
 	type data struct {
-		top3  []PersonWithIndex
-		other []PersonWithIndex
+		Top3  []PersonWithIndex
+		Other []PersonWithIndex
+		IsL   bool
 	}
 
 	l, _ := queryRank()
 	var d data
 	if len(l) >= 3 {
-		d.top3 = make([]PersonWithIndex, 3)
+		d.Top3 = make([]PersonWithIndex, 3)
 		for i := 0; i < 3; i++ {
-			d.top3[i] = PersonWithIndex{i + 1, l[i]}
+			d.Top3[i] = PersonWithIndex{i + 1, l[i]}
 		}
-		d.other = make([]PersonWithIndex, len(l)-3)
+		d.Other = make([]PersonWithIndex, len(l)-3)
 		for i := 3; i < len(l); i++ {
-			d.other[i-3] = PersonWithIndex{i + 1, l[i]}
+			d.Other[i-3] = PersonWithIndex{i + 1, l[i]}
 		}
 	} else {
-		d.top3 = make([]PersonWithIndex, len(l))
+		d.Top3 = make([]PersonWithIndex, len(l))
 		for i := 0; i < len(l); i++ {
-			d.top3[i] = PersonWithIndex{i + 1, l[i]}
+			d.Top3[i] = PersonWithIndex{i + 1, l[i]}
 		}
-		d.other = make([]PersonWithIndex, 0)
+		d.Other = make([]PersonWithIndex, 0)
 	}
 
-	err := tpl.ExecuteTemplate(w, "rankL.gohtml", d)
+	d.IsL = true
+	err := tpl.ExecuteTemplate(w, "rank.gohtml", d)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,34 +72,35 @@ func rankA(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	type PersonWithIndex struct {
-		index  int
-		person person
+		Index  int
+		Person person
 	}
 	type data struct {
-		top3  []PersonWithIndex
-		other []PersonWithIndex
+		Top3  []PersonWithIndex
+		Other []PersonWithIndex
+		IsL   bool
 	}
 
 	_, a := queryRank()
 	var d data
 	if len(a) >= 3 {
-		d.top3 = make([]PersonWithIndex, 3)
+		d.Top3 = make([]PersonWithIndex, 3)
 		for i := 0; i < 3; i++ {
-			d.top3[i] = PersonWithIndex{i + 1, a[i]}
+			d.Top3[i] = PersonWithIndex{i + 1, a[i]}
 		}
-		d.other = make([]PersonWithIndex, len(a)-3)
+		d.Other = make([]PersonWithIndex, len(a)-3)
 		for i := 3; i < len(a); i++ {
-			d.other[i-3] = PersonWithIndex{i + 1, a[i]}
+			d.Other[i-3] = PersonWithIndex{i + 1, a[i]}
 		}
 	} else {
-		d.top3 = make([]PersonWithIndex, len(a))
+		d.Top3 = make([]PersonWithIndex, len(a))
 		for i := 0; i < len(a); i++ {
-			d.top3[i] = PersonWithIndex{i + 1, a[i]}
+			d.Top3[i] = PersonWithIndex{i + 1, a[i]}
 		}
-		d.other = make([]PersonWithIndex, 0)
+		d.Other = make([]PersonWithIndex, 0)
 	}
-
-	err := tpl.ExecuteTemplate(w, "rankL.gohtml", d)
+	d.IsL = false
+	err := tpl.ExecuteTemplate(w, "rank.gohtml", d)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -195,12 +199,13 @@ func signup(w http.ResponseWriter, req *http.Request) {
 		http.SetCookie(w, c)
 		dbSessions[c.Value] = session{un, time.Now()}
 		// store user in dbUsers
-		bs, err := bcrypt.GenerateFromPassword([]byte(p), bcrypt.MinCost)
-		if err != nil {
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
-			return
-		}
-		u = user{un, bs, f, l, r}
+		hash := hashWithMD5(p)
+		//bs, err := bcrypt.GenerateFromPassword([]byte(p), bcrypt.MinCost)
+		//if err != nil {
+		//	http.Error(w, "Internal server error", http.StatusInternalServerError)
+		//	return
+		//}
+		u = user{un, hash, f, l, r}
 		dbUsers[un] = u
 		queryNewUser(u)
 
@@ -227,12 +232,18 @@ func login(w http.ResponseWriter, req *http.Request) {
 			http.Error(w, "Username and/or password do not match", http.StatusForbidden)
 			return
 		}
+		//err := bcrypt.CompareHashAndPassword(u.Password, []byte(p))
+		//if err != nil {
+		//	http.Error(w, "Username and/or password do not match", http.StatusForbidden)
+		//	return
+		//}
+
 		// does the entered password match the stored password?
-		err := bcrypt.CompareHashAndPassword(u.Password, []byte(p))
-		if err != nil {
+		if hashWithMD5(p) != u.Password {
 			http.Error(w, "Username and/or password do not match", http.StatusForbidden)
 			return
 		}
+
 		// create session
 		sID := uuid.NewV4()
 		c := &http.Cookie{
@@ -277,4 +288,42 @@ func authorized(h http.HandlerFunc) http.HandlerFunc {
 		}
 		h.ServeHTTP(w, r)
 	})
+}
+
+func meeting(w http.ResponseWriter, req *http.Request) {
+	u := getUser(w, req)
+	if !alreadyLoggedIn(w, req) {
+		fmt.Println("not logged in")
+		http.Redirect(w, req, "/", http.StatusSeeOther)
+		return
+	}
+	if u.Role != "admin" {
+		fmt.Println(u.Role)
+		http.Error(w, "You must be admin to enter the meetings", http.StatusForbidden)
+		return
+	}
+
+	vars := mux.Vars(req)
+	status := vars["status"]
+
+	var d struct {
+		Person []person
+		IsL    bool
+	}
+
+	if status == "l" {
+		d.Person, _ = queryRank()
+		d.IsL = true
+	} else if status == "a" {
+		_, d.Person = queryRank()
+		d.IsL = false
+	} else {
+		http.Error(w, "Invalid status", http.StatusBadRequest)
+		return
+	}
+
+	err := tpl.ExecuteTemplate(w, "meeting.gohtml", d)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
