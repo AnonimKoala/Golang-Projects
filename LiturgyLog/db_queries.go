@@ -1,11 +1,22 @@
 package main
 
 import (
+	"crypto/md5"
 	"database/sql"
+	"encoding/hex"
 	"fmt"
 	"log"
 	"time"
 )
+
+func hashWithMD5(input string) string {
+	hasher := md5.New()
+	_, err := hasher.Write([]byte(input))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return hex.EncodeToString(hasher.Sum(nil))
+}
 
 func scanRankRows(target *[]person, rows *sql.Rows) {
 	for rows.Next() {
@@ -111,8 +122,7 @@ func queryUsers() map[string]user {
 	defer rows.Close()
 
 	var dbUsers = map[string]user{}
-	var un, r, fn, ln sql.NullString
-	var pwd []byte
+	var un, pwd, r, fn, ln sql.NullString
 
 	for rows.Next() {
 		err := rows.Scan(&un, &pwd, &r, &fn, &ln)
@@ -120,7 +130,7 @@ func queryUsers() map[string]user {
 			log.Fatalln(err)
 		}
 
-		dbUsers[un.String] = user{un.String, []byte(pwd), r.String, fn.String, ln.String}
+		dbUsers[un.String] = user{un.String, pwd.String, fn.String, ln.String, r.String}
 	}
 
 	return dbUsers
