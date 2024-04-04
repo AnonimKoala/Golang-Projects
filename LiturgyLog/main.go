@@ -12,7 +12,7 @@ import (
 
 type user struct {
 	UserName string
-	Password []byte
+	Password string
 	First    string
 	Last     string
 	Role     string
@@ -37,7 +37,7 @@ func init() {
 	dbSessionsCleaned = time.Now()
 
 	var err error
-	db, err = sql.Open("mysql", "root:secret@(localhost:3306)/db?parseTime=true")
+	db, err = sql.Open("mysql", "root:@(localhost:3306)/4120471_czytnik?parseTime=true")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,11 +46,14 @@ func init() {
 
 func main() {
 	r := mux.NewRouter()
+
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets", http.FileServer(http.Dir("./assets"))))
+
 	r.HandleFunc("/home", home)
 	r.HandleFunc("/attendance", attendance)
 	r.HandleFunc("/rankL", rankL)
 	r.HandleFunc("/rankA", rankA)
+	r.HandleFunc("/meeting/{status}", meeting)
 
 	r.HandleFunc("/", index)
 	r.HandleFunc("/bar", bar)
