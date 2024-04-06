@@ -327,3 +327,51 @@ func meeting(w http.ResponseWriter, req *http.Request) {
 		log.Fatal(err)
 	}
 }
+
+func justification(w http.ResponseWriter, req *http.Request) {
+	u := getUser(w, req)
+	if !alreadyLoggedIn(w, req) {
+		http.Redirect(w, req, "/", http.StatusSeeOther)
+		return
+	}
+
+	if u.Role != "admin" {
+		http.Error(w, "You must be admin to enter the justifications", http.StatusForbidden)
+		return
+	}
+
+	var p []person
+	{
+		var tmp1, tmp2 []person
+		tmp1, tmp2 = queryRank()
+		p = append(tmp1, tmp2...)
+	}
+
+	err := tpl.ExecuteTemplate(w, "justification.gohtml", p)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func addAttendance(w http.ResponseWriter, req *http.Request) {
+	if !alreadyLoggedIn(w, req) {
+		http.Redirect(w, req, "/", http.StatusSeeOther)
+		return
+	}
+
+	if req.Method == http.MethodPost {
+
+		return
+	}
+
+	var p []person
+	{
+		var tmp1, tmp2 []person
+		tmp1, tmp2 = queryRank()
+		p = append(tmp1, tmp2...)
+	}
+	err := tpl.ExecuteTemplate(w, "addAttendance.gohtml", p)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
