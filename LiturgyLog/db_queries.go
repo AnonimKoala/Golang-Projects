@@ -21,9 +21,16 @@ func hashWithMD5(input string) string {
 func scanRankRows(target *[]person, rows *sql.Rows) {
 	for rows.Next() {
 		var p person
-		err := rows.Scan(&p.Rank, &p.FirstName, &p.LastName, &p.Card, &p.MPoints, &p.GPoints, &p.Sum)
+		var status sql.NullString
+		err := rows.Scan(&p.Rank, &p.FirstName, &p.LastName, &p.Card, &p.MPoints, &p.GPoints, &p.Sum, &status)
 		if err != nil {
 			log.Fatal(err)
+		}
+
+		if status.String == "M" {
+			p.IsL = false
+		} else {
+			p.IsL = true
 		}
 
 		*target = append(*target, p)
@@ -63,7 +70,7 @@ func scanActivityRows(target *[]activity, rows *sql.Rows) {
 }
 
 func queryRank() ([]person, []person) {
-	baseQuery := "SELECT ROW_NUMBER() OVER(ORDER BY suma DESC) AS RowNum, osoby.Imie, osoby.Nazwisko, osoby.karta, osoby.zbiorki, osoby.Punkty, osoby.suma FROM `osoby` WHERE stopien = %s ORDER BY suma DESC"
+	baseQuery := "SELECT ROW_NUMBER() OVER(ORDER BY suma DESC) AS RowNum, osoby.Imie, osoby.Nazwisko, osoby.karta, osoby.zbiorki, osoby.Punkty, osoby.suma, osoby.stopien FROM `osoby` WHERE stopien = %s ORDER BY suma DESC"
 	rA, err := db.Query(fmt.Sprintf(baseQuery, "\"M\""))
 	if err != nil {
 		log.Fatal(err)
