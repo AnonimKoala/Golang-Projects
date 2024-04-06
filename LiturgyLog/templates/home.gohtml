@@ -35,12 +35,12 @@
                     </a></li>
 
                 <li>
-                    <a href="attendance#week">
+                    <a href="/attendance#week">
                         <ion-icon name="clipboard-outline"></ion-icon>
                         <span class="menu">Frekwencja</span>
                     </a>
                 </li>
-                <li><a href="/rankL">
+                <li><a href="/rank/l">
                         <ion-icon name="trophy-outline"></ion-icon>
                         <span class="menu">Ranking</span>
                     </a></li>
@@ -51,7 +51,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="http://sluzbaliturgiczna-zgloszenia.epizy.com/help.php">
+                    <a href="#">
                         <ion-icon name="information-circle-outline"></ion-icon>
                         <span class="menu">Pomoc</span>
                     </a>
@@ -83,7 +83,7 @@
                 <div>
                     <section>
                         <div>
-                            <a href="/rankA" class="home_button pointer_less">
+                            <a href="/rank/a" class="home_button pointer_less">
                                 <ion-icon name="people-outline"></ion-icon>
                                 <p>Ministranci:</p>
                                 <span>
@@ -94,7 +94,7 @@
                     </section>
                     <section>
                         <div>
-                            <a href="attendance#month" class="home_button pointer_less">
+                            <a href="/attendance#month" class="home_button pointer_less">
                                 <ion-icon name="receipt-outline"></ion-icon>
                                 <p>Obecnych w tym miesiącu:</p>
                                 <span>
@@ -105,7 +105,7 @@
                     </section>
                     <section>
                         <div>
-                            <a href="/rankL" class="home_button pointer_less">
+                            <a href="/rank/l" class="home_button pointer_less">
                                 <ion-icon name="people-outline"></ion-icon>
                                 <p>Lektorzy:</p>
                                 <span>
@@ -124,7 +124,7 @@
                     <span>Ostatnia aktywność</span>
                 </h2>
                 <section>
-                    <a href="attendance#week" class="pointer_less">
+                    <a href="/attendance#week" class="pointer_less">
                         <table>
                             <tr>
                                 <th>Imię</th>
@@ -154,7 +154,7 @@
                     <ion-icon name="trophy-outline"></ion-icon>
                     TOP 5 Lektorów
                 </h2>
-                <a href="/rankL" class="pointer_less">
+                <a href="/rank/l" class="pointer_less">
                     <div class="color_frame">
                         <table class="top_table">
                             {{range $i, $v := .Top5L}}
@@ -183,7 +183,7 @@
                     <ion-icon name="trophy-outline"></ion-icon>
                     TOP 5 Ministrantów
                 </h2>
-                <a href="/rankA" class="pointer_less">
+                <a href="/rank/a" class="pointer_less">
                     <div class="color_frame">
                         <table class="top_table">
                             {{range $i, $v := .Top5A}}
@@ -212,7 +212,17 @@
 </main>
 
 
-<script src="button_script.js"></script>
+<script>
+    function show_nav() {
+        const element = document.getElementById("main_nav");
+        element.classList.add("nav_clicked");
+    }
+
+    function hide_nav() {
+        const element = document.getElementById("main_nav");
+        element.classList.remove("nav_clicked");
+    }
+</script>
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </body>

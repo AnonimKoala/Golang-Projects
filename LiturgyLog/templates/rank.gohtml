@@ -20,36 +20,37 @@
             <ion-icon name="menu-outline" class="hide620"></ion-icon>
         </button>
         <nav id="main_nav">
+
             <ul>
-                <li><a href="/">
+                <li ><a href="/home">
                         <ion-icon name="home-outline"></ion-icon>
                         <span class="menu">Dom</span>
                     </a></li>
 
                 <li>
-                    <a href="attendance#week">
+                    <a href="/attendance#week">
                         <ion-icon name="clipboard-outline"></ion-icon>
                         <span class="menu">Frekwencja</span>
                     </a>
                 </li>
-                <li class="checked"><a href="rank">
+                <li class="checked"><a href="/rank/l">
                         <ion-icon name="trophy-outline"></ion-icon>
                         <span class="menu">Ranking</span>
                     </a></li>
                 <li>
-                    <a href="zbiorki/zbiorki_lektor.php">
+                    <a href="/meeting/l">
                         <ion-icon name="reader-outline"></ion-icon>
                         <span class="menu">Zbiórki</span>
                     </a>
                 </li>
                 <li>
-                    <a href="http://sluzbaliturgiczna-zgloszenia.epizy.com/help.php">
+                    <a href="#">
                         <ion-icon name="information-circle-outline"></ion-icon>
                         <span class="menu">Pomoc</span>
                     </a>
                 </li>
                 <li>
-                    <a href="logout.php">
+                    <a href="/logout">
                         <ion-icon name="log-out-outline"></ion-icon>
                         <span class="menu">Wyloguj się</span>
                     </a>
@@ -63,6 +64,8 @@
                     </button>
                 </li>
             </ul>
+
+
         </nav>
 
         <article class="main_top_article">
@@ -71,8 +74,8 @@
                 <h1>Ranking Lektorów</h1>
                 <ul>
 
-                    <li {{if .IsL}} class="checked"{{end}}><a href="/rankL">Lektorzy</a></li>
-                    <li {{if not .IsL}} class="checked"{{end}}><a href="/rankA">Ministranci</a></li>
+                    <li {{if .IsL}} class="checked"{{end}}><a href="/rank/l">Lektorzy</a></li>
+                    <li {{if not .IsL}} class="checked"{{end}}><a href="/rank/a">Ministranci</a></li>
                 </ul>
             </header>
             <section class="top3">
@@ -86,7 +89,7 @@
 
                                 <h2>{{.Person.FirstName}} {{.Person.LastName}}</h2>
                                 <span>Lektor</span>
-                                <p>Suma {{.Person.Sum}}</p>';
+                                <p>Suma {{.Person.Sum}}</p>
                                 <p>
                                     <span>
                                         <ion-icon name="calendar-number-outline"></ion-icon>
