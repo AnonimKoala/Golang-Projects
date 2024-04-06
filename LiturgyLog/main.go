@@ -51,8 +51,10 @@ func main() {
 
 	r.HandleFunc("/home", home)
 	r.HandleFunc("/attendance", attendance)
-	r.HandleFunc("/rankL", rankL)
-	r.HandleFunc("/rankA", rankA)
+	r.HandleFunc("/addAttendance", addAttendance)
+	r.HandleFunc("/justification", justification)
+
+	r.HandleFunc("/rank/{status}", rank)
 	r.HandleFunc("/meeting/{status}", meeting)
 
 	r.HandleFunc("/", index)
