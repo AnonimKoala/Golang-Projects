@@ -19,17 +19,20 @@ func attendance(w http.ResponseWriter, r *http.Request) {
 	d.Month = queryActivities("thisMonth")
 	d.Week = queryActivities("thisWeek")
 
-	err := tpl.ExecuteTemplate(w, "frekwencja.gohtml", d)
+	err := tpl.ExecuteTemplate(w, "attendance.gohtml", d)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func rankL(w http.ResponseWriter, req *http.Request) {
+func rank(w http.ResponseWriter, req *http.Request) {
 	if !alreadyLoggedIn(w, req) {
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 		return
 	}
+
+	status := mux.Vars(req)["status"]
+
 	type PersonWithIndex struct {
 		Index  int
 		Person person
@@ -40,66 +43,34 @@ func rankL(w http.ResponseWriter, req *http.Request) {
 		IsL   bool
 	}
 
-	l, _ := queryRank()
+	var persons []person
 	var d data
-	if len(l) >= 3 {
+
+	if status == "l" {
+		persons, _ = queryRank()
+		d.IsL = true
+	} else if status == "a" {
+		_, persons = queryRank()
+		d.IsL = false
+	}
+
+	if len(persons) >= 3 {
 		d.Top3 = make([]PersonWithIndex, 3)
 		for i := 0; i < 3; i++ {
-			d.Top3[i] = PersonWithIndex{i + 1, l[i]}
+			d.Top3[i] = PersonWithIndex{i + 1, persons[i]}
 		}
-		d.Other = make([]PersonWithIndex, len(l)-3)
-		for i := 3; i < len(l); i++ {
-			d.Other[i-3] = PersonWithIndex{i + 1, l[i]}
+		d.Other = make([]PersonWithIndex, len(persons)-3)
+		for i := 3; i < len(persons); i++ {
+			d.Other[i-3] = PersonWithIndex{i + 1, persons[i]}
 		}
 	} else {
-		d.Top3 = make([]PersonWithIndex, len(l))
-		for i := 0; i < len(l); i++ {
-			d.Top3[i] = PersonWithIndex{i + 1, l[i]}
+		d.Top3 = make([]PersonWithIndex, len(persons))
+		for i := 0; i < len(persons); i++ {
+			d.Top3[i] = PersonWithIndex{i + 1, persons[i]}
 		}
 		d.Other = make([]PersonWithIndex, 0)
 	}
 
-	d.IsL = true
-	err := tpl.ExecuteTemplate(w, "rank.gohtml", d)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func rankA(w http.ResponseWriter, req *http.Request) {
-	if !alreadyLoggedIn(w, req) {
-		http.Redirect(w, req, "/", http.StatusSeeOther)
-		return
-	}
-	type PersonWithIndex struct {
-		Index  int
-		Person person
-	}
-	type data struct {
-		Top3  []PersonWithIndex
-		Other []PersonWithIndex
-		IsL   bool
-	}
-
-	_, a := queryRank()
-	var d data
-	if len(a) >= 3 {
-		d.Top3 = make([]PersonWithIndex, 3)
-		for i := 0; i < 3; i++ {
-			d.Top3[i] = PersonWithIndex{i + 1, a[i]}
-		}
-		d.Other = make([]PersonWithIndex, len(a)-3)
-		for i := 3; i < len(a); i++ {
-			d.Other[i-3] = PersonWithIndex{i + 1, a[i]}
-		}
-	} else {
-		d.Top3 = make([]PersonWithIndex, len(a))
-		for i := 0; i < len(a); i++ {
-			d.Top3[i] = PersonWithIndex{i + 1, a[i]}
-		}
-		d.Other = make([]PersonWithIndex, 0)
-	}
-	d.IsL = false
 	err := tpl.ExecuteTemplate(w, "rank.gohtml", d)
 	if err != nil {
 		log.Fatal(err)
