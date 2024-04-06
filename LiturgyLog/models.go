@@ -10,6 +10,7 @@ type person struct {
 	GPoints   int
 	Sum       int
 	Rank      int
+	IsL       bool
 }
 
 type activity struct {
