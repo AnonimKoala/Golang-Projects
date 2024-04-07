@@ -131,18 +131,40 @@ func index(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func bar(w http.ResponseWriter, req *http.Request) {
+func api(w http.ResponseWriter, req *http.Request) {
 	u := getUser(w, req)
 	if !alreadyLoggedIn(w, req) {
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 		return
 	}
-	if u.Role != "007" {
-		http.Error(w, "You must be 007 to enter the bar", http.StatusForbidden)
+	if u.Role != "api" {
+		http.Error(w, "You are not allowed to this action!", http.StatusForbidden)
 		return
 	}
 
-	tpl.ExecuteTemplate(w, "bar.gohtml", u)
+	vars := mux.Vars(req)
+	card, isCard := vars["card"]
+	recordTime, isTime := vars["time"]
+	date, isDate := vars["date"]
+
+	if !isCard {
+		updateDb()
+	}
+	if isCard && !isTime && !isDate {
+		addRowToDb(card, "", "")
+	}
+	if isCard && isTime && !isDate {
+		addRowToDb(card, recordTime, "")
+	}
+	if isCard && isTime && isDate {
+		addRowToDb(card, recordTime, date)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	_, err := w.Write([]byte("OK"))
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func signup(w http.ResponseWriter, req *http.Request) {

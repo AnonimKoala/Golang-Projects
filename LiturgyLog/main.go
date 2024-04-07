@@ -48,6 +48,12 @@ func main() {
 	r := mux.NewRouter()
 
 	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets", http.FileServer(http.Dir("./assets"))))
+	r.HandleFunc("/", index)
+
+	r.HandleFunc("/api", api)
+	r.HandleFunc("/api/{card}", api)
+	r.HandleFunc("/api/{card}/{time}", api)
+	r.HandleFunc("/api/{card}/{time}/{date}", api)
 
 	r.HandleFunc("/home", home)
 	r.HandleFunc("/attendance", attendance)
@@ -57,8 +63,6 @@ func main() {
 	r.HandleFunc("/rank/{status}", rank)
 	r.HandleFunc("/meeting/{status}", meeting)
 
-	r.HandleFunc("/", index)
-	r.HandleFunc("/bar", bar)
 	r.HandleFunc("/signup", signup)
 	r.HandleFunc("/login", login)
 	r.HandleFunc("/logout", authorized(logout))
