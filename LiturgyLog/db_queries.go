@@ -155,3 +155,55 @@ func queryNewUser(u user) {
 		log.Fatalln(err)
 	}
 }
+
+func genUpdateQ(time, dayCondition, startHour, endHour string) string {
+	return fmt.Sprintf("UPDATE odczyt SET msza_godz = '%s' WHERE DATE_FORMAT(data_odczytu,'%%w') %s AND godzina BETWEEN '%s' AND '%s'", time, dayCondition, startHour, endHour)
+}
+func updateDb() {
+	queries := []string{
+		genUpdateQ("6:30", "= 0", "6:00", "7:39:59"),
+		genUpdateQ("8:00", "= 0", "7:40", "8:59:59"),
+		genUpdateQ("9:30", "= 0", "9:00", "10:29:59"),
+		genUpdateQ("11:00", "= 0", "10:30", "12:29:59"),
+		genUpdateQ("13:00", "= 0", "12:30", "14:30:59"),
+		genUpdateQ("17:00", "= 0", "16:30", "18:30:59"),
+
+		genUpdateQ("6:30", "!= 0", "6:00", "6:49:59"),
+		genUpdateQ("7:00", "!= 0", "6:50", "7:39:59"),
+		genUpdateQ("8:00", "!= 0", "7:40", "9:00"),
+		genUpdateQ("18:00", "!= 0", "17:30", "18:25"),
+
+		"UPDATE osoby, odczyt SET osoby.Punkty = osoby.Punkty + odczyt.ilosc_pkt WHERE osoby.karta = odczyt.karta AND (czy_odczytano = 'NIE' OR czy_odczytano IS NULL);",
+		"UPDATE osoby, odczyt SET osoby.suma = osoby.Punkty + osoby.zbiorki;",
+		"UPDATE odczyt SET czy_odczytano = 'TAK' WHERE czy_odczytano = 'NIE' OR czy_odczytano IS NULL;",
+		"UPDATE odczyt SET msza_godz = godzina WHERE msza_godz IS NULL",
+	}
+
+	for _, query := range queries {
+		_, err := db.Exec(query)
+		if err != nil {
+			log.Printf("Update DB error: %s", err)
+		}
+	}
+}
+func addRowToDb(card, recordTime, date string) {
+	value := 5 // default value
+
+	if recordTime == "" {
+		recordTime = time.Now().Format("15:04:05")
+	}
+	if date == "" {
+		date = time.Now().Format("2006-01-02")
+	}
+
+	q := fmt.Sprintf("INSERT INTO odczyt (karta, data_odczytu,godzina,ilosc_pkt,czy_odczytano) VALUES ('%s', '%s', '%s', %d, 'NIE')", card, date, recordTime, value)
+	stmt, err := db.Prepare(q)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec()
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
