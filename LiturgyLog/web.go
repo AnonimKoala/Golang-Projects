@@ -71,6 +71,10 @@ func rank(w http.ResponseWriter, req *http.Request) {
 		d.Other = make([]PersonWithIndex, 0)
 	}
 
+	if len(d.Top3) >= 3 {
+		d.Top3[0], d.Top3[1], d.Top3[2] = d.Top3[1], d.Top3[0], d.Top3[2]
+	}
+
 	err := tpl.ExecuteTemplate(w, "rank.gohtml", d)
 	if err != nil {
 		log.Fatal(err)
