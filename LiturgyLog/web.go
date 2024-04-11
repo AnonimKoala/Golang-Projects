@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
+	"html/template"
 	"log"
 	"net/http"
 	"time"
@@ -300,28 +301,78 @@ func meeting(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	vars := mux.Vars(req)
-	status := vars["status"]
+	if req.Method == http.MethodGet {
 
-	var d struct {
-		Person []person
-		IsL    bool
-	}
+		vars := mux.Vars(req)
+		status := vars["status"]
 
-	if status == "l" {
-		d.Person, _ = queryRank()
-		d.IsL = true
-	} else if status == "a" {
-		_, d.Person = queryRank()
-		d.IsL = false
-	} else {
-		http.Error(w, "Invalid status", http.StatusBadRequest)
-		return
-	}
+		var d struct {
+			Person []person
+			IsL    bool
+		}
 
-	err := tpl.ExecuteTemplate(w, "meeting.gohtml", d)
-	if err != nil {
-		log.Fatal(err)
+		if status == "l" {
+			d.Person, _ = queryRank()
+			d.IsL = true
+		} else if status == "a" {
+			_, d.Person = queryRank()
+			d.IsL = false
+		} else {
+			http.Error(w, "Invalid status", http.StatusBadRequest)
+			return
+		}
+
+		err := tpl.ExecuteTemplate(w, "meeting.gohtml", d)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else if req.Method == http.MethodPost {
+
+		status := req.FormValue("stopien")
+
+		rows, err := db.Query("SELECT Imie, Nazwisko, karta FROM osoby WHERE stopien LIKE ?", status+"%")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var fn, ln, card, temp, color string
+			err := rows.Scan(&fn, &ln, &card)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			temp = req.FormValue(card)
+
+			if temp == "absent" {
+				color = "red"
+				_, err = db.Exec("UPDATE osoby SET zbiorki = zbiorki - 10 WHERE karta = ?", card)
+			} else if temp == "present" {
+				color = "green"
+				_, err = db.Exec("UPDATE osoby SET zbiorki = zbiorki + 10 WHERE karta = ?", card)
+			} else if temp == "justified" {
+				color = "grey"
+			}
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			var r []template.HTML
+			r = append(r, template.HTML(fmt.Sprintf("<li class='%s'><p>%s %s</p></li>", color, fn, ln)))
+
+			http.Redirect(w, req, "/rank/l", http.StatusSeeOther)
+			//err = tpl.ExecuteTemplate(w, "meeting_summary.gohtml", r)
+			//if err != nil {
+			//	log.Fatal(err)
+			//}
+		}
+
+		err = rows.Err()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
