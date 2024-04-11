@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Służba liturgiczna</title>
+    <link rel="stylesheet" href="./assets/CSS/general.css">
+</head>
+
+<body>
+<main>
+    <header class="top_header">
+        <div>
+            <div class="logo"></div>
+            <div class="namespace">
+                <h1>Służba liturgiczna PMP</h1>
+            </div>
+        </div>
+        <div class="right">
+            <ion-icon name="person-circle"></ion-icon>
+        </div>
+    </header>
+    <div class="container">
+        <button class="showbutton" onclick="show_nav()">
+            <ion-icon name="menu-outline" class="hide620"></ion-icon>
+        </button>
+        <nav id="main_nav">
+
+            <ul>
+                <li class="checked"><a href="">
+                        <ion-icon name="home-outline"></ion-icon>
+                        <span class="menu">Dom</span>
+                    </a></li>
+
+                <li>
+                    <a href="/attendance#week">
+                        <ion-icon name="clipboard-outline"></ion-icon>
+                        <span class="menu">Frekwencja</span>
+                    </a>
+                </li>
+                <li><a href="/rank/l">
+                        <ion-icon name="trophy-outline"></ion-icon>
+                        <span class="menu">Ranking</span>
+                    </a></li>
+                <li>
+                    <a href="/meeting/l">
+                        <ion-icon name="reader-outline"></ion-icon>
+                        <span class="menu">Zbiórki</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <ion-icon name="information-circle-outline"></ion-icon>
+                        <span class="menu">Pomoc</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/logout">
+                        <ion-icon name="log-out-outline"></ion-icon>
+                        <span class="menu">Wyloguj się</span>
+                    </a>
+                </li>
+                <li class="hide1030">
+                    <button onclick="hide_nav()">
+                        <a>
+                            <ion-icon name="chevron-forward-circle-outline" class="zwin"></ion-icon>
+                            <span class="menu">Zwiń</span>
+                        </a>
+                    </button>
+                </li>
+            </ul>
+
+
+        </nav>
+        <div class="main_articles">
+            <article class="article_shortcut">
+                <h2>
+                    <ion-icon name="compass-outline"></ion-icon>
+                    <span>W skrócie</span>
+                </h2>
+                <div>
+                    <section>
+                        <div>
+                            <a href="/rank/a" class="home_button pointer_less">
+                                <ion-icon name="people-outline"></ion-icon>
+                                <p>Ministranci:</p>
+                                <span>
+                                       {{.ACount}}
+                                    </span>
+                            </a>
+                        </div>
+                    </section>
+                    <section>
+                        <div>
+                            <a href="/attendance#month" class="home_button pointer_less">
+                                <ion-icon name="receipt-outline"></ion-icon>
+                                <p>Obecnych w tym miesiącu:</p>
+                                <span>
+                                       {{ .CMonthCount }}
+                                    </span>
+                            </a>
+                        </div>
+                    </section>
+                    <section>
+                        <div>
+                            <a href="/rank/l" class="home_button pointer_less">
+                                <ion-icon name="people-outline"></ion-icon>
+                                <p>Lektorzy:</p>
+                                <span>
+                                        {{ .LCount }}
+                                    </span>
+                            </a>
+                        </div>
+                    </section>
+                </div>
+            </article>
+
+
+            <article class="article_activity">
+                <h2>
+                    <ion-icon name="time-outline"></ion-icon>
+                    <span>Ostatnia aktywność</span>
+                </h2>
+                <section>
+                    <a href="/attendance#week" class="pointer_less">
+                        <table>
+                            <tr>
+                                <th>Imię</th>
+                                <th>Nazwisko</th>
+                                <th>Msza</th>
+                                <th>Data</th>
+                            </tr>
+                            {{range .Last10}}
+                                <tr>
+                                    <td>{{ .Person.FirstName }}</td>
+                                    <td>{{ .Person.LastName }}</td>
+                                    <td>{{.Time}}</td>
+                                    <td>{{.Date}}</td>
+                                </tr>
+                            {{end}}
+                        </table>
+                    </a>
+
+                </section>
+            </article>
+        </div>
+
+        <article class="article_tops">
+
+            <section class="top_lector">
+                <h2>
+                    <ion-icon name="trophy-outline"></ion-icon>
+                    TOP 5 Lektorów
+                </h2>
+                <a href="/rank/l" class="pointer_less">
+                    <div class="color_frame">
+                        <table class="top_table">
+                            {{range $i, $v := .Top5L}}
+                                <tr>
+                                    <th>
+                                        {{ if lt $i 3 }}
+                                            <ion-icon name="trophy"></ion-icon>
+                                        {{ else }}
+                                            {{$i}}
+                                        {{end}}
+                                    </th>
+                                    <td>{{$v.FirstName}}</td>
+                                    <td>{{$v.LastName}}</td>
+                                    <td>{{$v.Sum}}</td>
+                                </tr>
+                            {{end}}
+                        </table>
+                    </div>
+                </a>
+
+
+            </section>
+
+            <section class="top_acolyte">
+                <h2>
+                    <ion-icon name="trophy-outline"></ion-icon>
+                    TOP 5 Ministrantów
+                </h2>
+                <a href="/rank/a" class="pointer_less">
+                    <div class="color_frame">
+                        <table class="top_table">
+                            {{range $i, $v := .Top5A}}
+                                <tr>
+                                    <th>
+                                        {{ if lt $i 3 }}
+                                            <ion-icon name="trophy"></ion-icon>
+                                        {{ else }}
+                                            {{$v.Rank}}
+                                        {{end}}
+                                    </th>
+                                    <td>{{$v.FirstName}}</td>
+                                    <td>{{$v.LastName}}</td>
+                                    <td>{{$v.Sum}}</td>
+                                </tr>
+                            {{end}}
+                        </table>
+                    </div>
+                </a>
+
+            </section>
+        </article>
+
+
+    </div>
+</main>
+
+
+<script>
+    function show_nav() {
+        const element = document.getElementById("main_nav");
+        element.classList.add("nav_clicked");
+    }
+
+    function hide_nav() {
+        const element = document.getElementById("main_nav");
+        element.classList.remove("nav_clicked");
+    }
+</script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+
+</html>
