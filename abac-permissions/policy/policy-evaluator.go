@@ -18,7 +18,6 @@ func (p ABACPolicy) Evaluate(subject Subject, action Action, resource Resource) 
 		case View, Update, Create:
 			return true
 		case Delete:
-			// todo test if the struct are the same, is allow to data assertion
 			if todo, ok := resource.(Todo); ok {
 				return todo.IsDone
 			}
